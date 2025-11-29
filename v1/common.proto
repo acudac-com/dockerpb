@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package dockerpb.v1;
+
+option go_package = "github.com/acudac-com/dockerpb/v1";
+
+// A filter for a list request
+message Filter {
+  // The key to filter on, e.g. name
+  string key = 1;
+  // The values to filter on, e.g. ["foobar"]
+  repeated string values = 2;
+}

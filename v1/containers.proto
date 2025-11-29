@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package dockerpb.v1;
+
+option go_package = "github.com/acudac-com/dockerpb/v1";
+
+import "google/protobuf/timestamp.proto";
+import "dockerpb/v1/common.proto";
+
+// Containers service. Read more at https://docs.docker.com/reference/api/engine/version/v1.52/#tag/Container
+service Containers {
+  // Returns a list of containers.
+  rpc ListContainers(ListContainersRequest) returns (ListContainersResponse);
+}
+
+message Container {
+  // E.g. aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf",
+  string id = 1;
+  // E.g. /funny_chatelet
+  repeated string names = 2;
+  // E.g. docker.io/library/ubuntu:latest
+  string image = 3;
+  // E.g. "/bin/bash"
+  string command = 4;
+  // When the container was created
+  google.protobuf.Timestamp created = 5;
+  // List of ports
+  repeated Port ports = 6;
+  // E.g. 122880
+  int64 size_rw = 7;
+  // E.g. 1653948416
+  int64 size_root_fs = 8;
+  // E.g. "com.example.vendor": "Acme"
+  map<string, string> labels = 9;
+  // E.g. "running"
+  string state = 10;
+  // E.g. "Up 4 days"
+  string status = 11;
+  // E.g. "host", "private"
+  repeated string networks = 12;
+  // The list of mounts
+  repeated Mount mounts = 13;
+  // The health status
+  string health = 14;
+  // The failing streak, related to the health status
+  int32 failing_streak = 15;
+}
+
+message Port {
+  // E.g. 8080
+  int32 private_port = 1;
+  // E.g. 80
+  int32 public_port = 2;
+  // E.g. tcp or udp
+  string type = 3;
+}
+
+message Mount {
+  // E.g. volume or bind
+  string type = 1;
+  // E.g. myvolume
+  string name = 2;
+  // E.g. /var/lib/docker/volumes/myvolume/_data
+  string source = 3;
+  // E.g. /usr/share/nginx/html/
+  string destination = 4;
+  // E.g. local or nfs
+  string driver = 5;
+  // Whether the mount is read-write
+  bool rw = 6;
+}
+
+message ListContainersRequest {
+  // Return all containers. By default, only running containers are shown.
+  bool all = 1;
+  // Return this number of most recently created containers, including non-running ones.
+  int32 limit = 2;
+  // The fields to return
+  repeated string read_mask = 3;
+  // Filters to process on the container list.
+  // For example, {"status": ["paused"]} will only return paused containers.
+  repeated Filter filters = 4;
+}
+
+message ListContainersResponse {
+  // The list of containers
+  repeated Container containers = 1;
+}
